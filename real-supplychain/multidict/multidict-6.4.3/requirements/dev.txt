@@ -1,0 +1,5 @@
+-r ci.txt
+-r lint.txt
+-r towncrier.txt
+-r doc.txt
+pyperformance==1.11.0

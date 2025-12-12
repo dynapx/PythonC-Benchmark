@@ -1,0 +1,7 @@
+setup.py
+snip_basic_verify1/__init__.py
+snip_basic_verify1.egg-info/PKG-INFO
+snip_basic_verify1.egg-info/SOURCES.txt
+snip_basic_verify1.egg-info/dependency_links.txt
+snip_basic_verify1.egg-info/top_level.txt
+snip_basic_verify1/__pycache__/_cffi__x21facca8x8bc2ff7e.c

@@ -1,0 +1,8 @@
+setup.py
+snip_setuptools_verify.py
+__pycache__/_cffi__x21facca8x8bc2ff7e.c
+snip_setuptools_verify.egg-info/PKG-INFO
+snip_setuptools_verify.egg-info/SOURCES.txt
+snip_setuptools_verify.egg-info/dependency_links.txt
+snip_setuptools_verify.egg-info/not-zip-safe
+snip_setuptools_verify.egg-info/top_level.txt

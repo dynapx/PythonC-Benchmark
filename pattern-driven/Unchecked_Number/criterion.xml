@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<criterions code_directory="." entry_script="test_divzero.py">
+
+  <!-- N1.1 测例1：整数除法 -->
+  <criterion>
+    <function>divide_int</function>
+    <return>True</return>
+    <local>b</local> <!-- 重点是除数 -->
+  </criterion>
+
+  <!-- N1.1 测例2：模运算 -->
+  <criterion>
+    <function>mod_int</function>
+    <return>True</return>
+    <local>b</local>
+  </criterion>
+
+  <!-- N1.1 测例3：浮点除法（可能不算漏洞） -->
+  <criterion>
+    <function>divide_float</function>
+    <return>True</return>
+    <local>b</local>
+  </criterion>
+
+  <!-- N1.1 测例4：PyObject 转 long 再除 -->
+  <criterion>
+    <function>divide_pyobject</function>
+    <return>True</return>
+    <local>obj2</local>
+  </criterion>
+
+  <!-- N1.1 测例5：除以表达式 (b - b) -->
+  <criterion>
+    <function>divide_by_expr_zero</function>
+    <return>True</return>
+    <local>b</local>
+  </criterion>
+
+</criterions>

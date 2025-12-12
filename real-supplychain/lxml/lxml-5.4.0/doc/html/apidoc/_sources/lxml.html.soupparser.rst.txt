@@ -1,0 +1,8 @@
+lxml.html.soupparser module
+===========================
+
+.. automodule:: lxml.html.soupparser
+   :members:
+   :private-members:
+   :show-inheritance:
+   :undoc-members:

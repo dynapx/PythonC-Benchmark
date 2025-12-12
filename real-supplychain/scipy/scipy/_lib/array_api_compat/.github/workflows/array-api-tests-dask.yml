@@ -1,0 +1,18 @@
+name: Array API Tests (Dask)
+
+on: [push, pull_request]
+
+jobs:
+  array-api-tests-dask:
+    uses: ./.github/workflows/array-api-tests.yml
+    with:
+      package-name: dask
+      package-version: '>= 2024.9.0'
+      module-name: dask.array
+      extra-requires: numpy
+      # Dask is substantially slower then other libraries on unit tests.
+      # Reduce the number of examples to speed up CI, even though this means that this
+      # workflow is barely more than a smoke test, and one should expect extreme 
+      # flakiness. Before changes to dask-xfails.txt or dask-skips.txt, please run
+      # the full test suite with at least 200 examples.
+      pytest-extra-args: --max-examples=5

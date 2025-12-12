@@ -1,0 +1,42 @@
+# -*- coding: utf-8 -*-
+
+"""
+    Aho-Corasick string search algorithm.
+
+    Author    : Wojciech Muła, wojciech_mula@poczta.onet.pl
+    WWW       : http://0x80.pl
+    License   : public domain
+"""
+
+import sys
+
+
+def main():
+    try:
+        path = sys.argv[1]
+    except IndexError:
+        path = 'memory.dump'
+
+    app = Application(path)
+    app.run()
+
+
+class Application(object):
+
+    def __init__(self, path):
+        self.path = path
+
+    def run(self):
+        with open(self.path, 'rt') as f:
+            print(max(self.ids(f)))
+
+    def ids(self, file):
+        for i, line in enumerate(file):
+            fields = line.split()
+            if fields[0] == 'R':
+                yield int(fields[1])
+
+
+if __name__ == '__main__':
+    main()
+

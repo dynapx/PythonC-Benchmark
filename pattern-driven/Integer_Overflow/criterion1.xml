@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<criterions code_directory="." entry_script="test_overflow.py">
+
+<!-- 源点函数：get_numbers_for_overflow -->
+<criterion>
+    <function>get_numbers_for_overflow</function>
+    <return>True</return>  <!-- 标记返回值为源点 -->
+    <local>a</local>
+
+</criterion>
+    <criterion>
+    <function>get_numbers_for_overflow</function>
+    <return>True</return>  <!-- 标记返回值为源点 -->
+    <local>b</local>
+
+</criterion>
+
+<!-- 整数溢出相关函数 -->
+<criterion>
+    <function>pyarg_overflow</function>
+    <return>True</return>
+    <local>val</local>
+</criterion>
+
+<criterion>
+    <function>float_to_int</function>
+    <return>True</return>
+    <local>val</local>
+</criterion>
+
+<criterion>
+    <function>double_to_long_overflow</function>
+    <return>True</return>
+    <local>val</local>
+</criterion>
+
+<criterion>
+    <function>add_overflow</function>
+    <return>True</return>
+    <local>a</local>
+    <local>b</local>
+</criterion>
+
+<criterion>
+    <function>mul_overflow</function>
+    <return>True</return>
+    <local>a</local>
+    <local>b</local>
+</criterion>
+
+<criterion>
+    <function>unsigned_cast</function>
+    <return>True</return>
+    <local>val</local>
+</criterion>
+
+<criterion>
+    <function>shift_overflow</function>
+    <return>True</return>
+    <local>val</local>
+    <local>shift</local>
+</criterion>
+
+<criterion>
+    <function>float_mul_overflow</function>
+    <return>True</return>
+    <local>a</local>
+    <local>b</local>
+</criterion>
+
+<criterion>
+    <function>float_cast_error</function>
+    <return>True</return>
+    <local>obj</local>
+</criterion>
+<criterion>
+    <function>get_num</function>
+    <return>True</return>
+    <local>None</local>
+</criterion>
+</criterions>

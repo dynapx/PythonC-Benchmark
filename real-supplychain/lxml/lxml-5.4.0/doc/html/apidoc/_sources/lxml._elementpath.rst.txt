@@ -1,0 +1,8 @@
+lxml.\_elementpath module
+=========================
+
+.. automodule:: lxml._elementpath
+   :members:
+   :private-members:
+   :show-inheritance:
+   :undoc-members:

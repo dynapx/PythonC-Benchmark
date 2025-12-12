@@ -1,0 +1,2 @@
+_cffi__x21facca8x8bc2ff7e
+snip_setuptools_verify

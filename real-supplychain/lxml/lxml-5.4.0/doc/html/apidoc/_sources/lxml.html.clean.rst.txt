@@ -1,0 +1,8 @@
+lxml.html.clean module
+======================
+
+.. automodule:: lxml.html.clean
+   :members:
+   :private-members:
+   :show-inheritance:
+   :undoc-members:

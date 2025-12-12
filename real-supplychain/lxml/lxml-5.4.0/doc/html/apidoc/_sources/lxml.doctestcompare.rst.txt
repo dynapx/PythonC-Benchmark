@@ -1,0 +1,8 @@
+lxml.doctestcompare module
+==========================
+
+.. automodule:: lxml.doctestcompare
+   :members:
+   :private-members:
+   :show-inheritance:
+   :undoc-members:

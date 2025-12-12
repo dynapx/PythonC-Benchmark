@@ -1,0 +1,6 @@
+setup.py
+snip_infrastructure/__init__.py
+snip_infrastructure.egg-info/PKG-INFO
+snip_infrastructure.egg-info/SOURCES.txt
+snip_infrastructure.egg-info/dependency_links.txt
+snip_infrastructure.egg-info/top_level.txt

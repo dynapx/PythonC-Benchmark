@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<criterions code_directory="." entry_script="test_buffer_overflow.py">
+
+  <!-- 缓冲区溢出函数定义为 Source -->
+  <criterion> <function>unsafe_copy</function>       <return>True</return> <local>None</local> </criterion>
+  <criterion> <function>unsafe_memcpy</function>     <return>True</return> <local>None</local> </criterion>
+  <criterion> <function>unsafe_snprintf</function>   <return>True</return> <local>None</local> </criterion>
+  <criterion> <function>unsafe_strncat</function>    <return>True</return> <local>None</local> </criterion>
+
+</criterions>

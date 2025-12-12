@@ -1,0 +1,8 @@
+lxml.html.\_diffcommand module
+==============================
+
+.. automodule:: lxml.html._diffcommand
+   :members:
+   :private-members:
+   :show-inheritance:
+   :undoc-members:

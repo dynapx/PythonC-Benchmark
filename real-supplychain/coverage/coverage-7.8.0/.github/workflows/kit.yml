@@ -1,0 +1,315 @@
+# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+# For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
+
+# This file is meant to be processed with cog.
+# Running "make prebuild" will bring it up to date.
+
+# Based on:
+# https://github.com/joerick/cibuildwheel/blob/master/examples/github-deploy.yml
+
+# To test installing wheels without uploading them to PyPI:
+#
+#   $ mkdir /tmp/pypi
+#   $ cp dist/* /tmp/pypi
+#   $ python -m pip install piprepo
+#   $ piprepo build /tmp/pypi
+#   $ python -m pip install -v coverage --index-url=file:///tmp/pypi/simple
+#
+# Note that cibuildwheel recommends not shipping wheels for pre-release versions
+# of Python: https://cibuildwheel.readthedocs.io/en/stable/options/#prerelease-pythons
+# So we don't.
+
+name: "Kits"
+
+on:
+  push:
+    branches:
+      # Don't build kits all the time, but do if the branch is about kits.
+      - "**/*kit*"
+  workflow_dispatch:
+  repository_dispatch:
+    types:
+      - build-kits
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  PIP_DISABLE_PIP_VERSION_CHECK: 1
+  # PYVERSIONS: changing the list of versions will change the number of
+  # expected distributions.
+  EXPECTED: 63
+
+permissions:
+  contents: read
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  wheels:
+    name: "${{ matrix.py }} ${{ matrix.os }} ${{ matrix.arch }} wheels"
+    runs-on: "${{ matrix.os }}-${{ matrix.os-version || 'latest' }}"
+    env:
+      MATRIX_ID: "${{ matrix.py }}-${{ matrix.os }}-${{ matrix.arch }}"
+    strategy:
+      matrix:
+        include:
+          # To change the matrix, edit the choices, then process this file with cog:
+          #
+          # $ make workflows
+          #
+          # which runs:
+          #
+          # $ python -m pip install cogapp
+          # $ python -m cogapp -crP .github/workflows/kit.yml
+          #
+          # Choices come from the table on https://pypi.org/project/cibuildwheel/
+          #
+          # [[[cog
+          #   #----- vvv Choices for the matrix vvv -----
+          #
+          #   # Operating systems:
+          #   oss = ["ubuntu", "macos", "windows"]
+          #
+          #   # For each OS, what arch to use with cibuildwheel:
+          #   os_archs = {
+          #       "ubuntu": ["x86_64", "i686", "aarch64"],
+          #       "macos": ["arm64", "x86_64"],
+          #       "windows": ["x86", "AMD64"],
+          #   }
+          #   # PYVERSIONS. Available versions: https://pypi.org/project/cibuildwheel/
+          #   # PyPy versions are handled further below in the "pypy" step.
+          #   pys = ["cp39", "cp310", "cp311", "cp312", "cp313"]
+          #
+          #   # Some OS/arch combinations need overrides for the Python versions:
+          #   os_arch_pys = {
+          #     # ("macos", "arm64"): ["cp38", "cp39", "cp310", "cp311", "cp312"],
+          #   }
+          #
+          #   #----- ^^^ ---------------------- ^^^ -----
+          #
+          #   import json
+          #   for the_os in oss:
+          #       for the_arch in os_archs[the_os]:
+          #           for the_py in os_arch_pys.get((the_os, the_arch), pys):
+          #               them = {
+          #                   "os": the_os,
+          #                   "py": the_py,
+          #                   "arch": the_arch,
+          #               }
+          #               if the_os == "macos":
+          #                   them["os-version"] = "13"
+          #               if the_arch == "aarch64":
+          #                   # https://github.com/pypa/cibuildwheel/issues/2257
+          #                   them["os-version"] = "22.04-arm"
+          #               print(f"- {json.dumps(them)}")
+          # ]]]
+          - {"os": "ubuntu", "py": "cp39", "arch": "x86_64"}
+          - {"os": "ubuntu", "py": "cp310", "arch": "x86_64"}
+          - {"os": "ubuntu", "py": "cp311", "arch": "x86_64"}
+          - {"os": "ubuntu", "py": "cp312", "arch": "x86_64"}
+          - {"os": "ubuntu", "py": "cp313", "arch": "x86_64"}
+          - {"os": "ubuntu", "py": "cp39", "arch": "i686"}
+          - {"os": "ubuntu", "py": "cp310", "arch": "i686"}
+          - {"os": "ubuntu", "py": "cp311", "arch": "i686"}
+          - {"os": "ubuntu", "py": "cp312", "arch": "i686"}
+          - {"os": "ubuntu", "py": "cp313", "arch": "i686"}
+          - {"os": "ubuntu", "py": "cp39", "arch": "aarch64", "os-version": "22.04-arm"}
+          - {"os": "ubuntu", "py": "cp310", "arch": "aarch64", "os-version": "22.04-arm"}
+          - {"os": "ubuntu", "py": "cp311", "arch": "aarch64", "os-version": "22.04-arm"}
+          - {"os": "ubuntu", "py": "cp312", "arch": "aarch64", "os-version": "22.04-arm"}
+          - {"os": "ubuntu", "py": "cp313", "arch": "aarch64", "os-version": "22.04-arm"}
+          - {"os": "macos", "py": "cp39", "arch": "arm64", "os-version": "13"}
+          - {"os": "macos", "py": "cp310", "arch": "arm64", "os-version": "13"}
+          - {"os": "macos", "py": "cp311", "arch": "arm64", "os-version": "13"}
+          - {"os": "macos", "py": "cp312", "arch": "arm64", "os-version": "13"}
+          - {"os": "macos", "py": "cp313", "arch": "arm64", "os-version": "13"}
+          - {"os": "macos", "py": "cp39", "arch": "x86_64", "os-version": "13"}
+          - {"os": "macos", "py": "cp310", "arch": "x86_64", "os-version": "13"}
+          - {"os": "macos", "py": "cp311", "arch": "x86_64", "os-version": "13"}
+          - {"os": "macos", "py": "cp312", "arch": "x86_64", "os-version": "13"}
+          - {"os": "macos", "py": "cp313", "arch": "x86_64", "os-version": "13"}
+          - {"os": "windows", "py": "cp39", "arch": "x86"}
+          - {"os": "windows", "py": "cp310", "arch": "x86"}
+          - {"os": "windows", "py": "cp311", "arch": "x86"}
+          - {"os": "windows", "py": "cp312", "arch": "x86"}
+          - {"os": "windows", "py": "cp313", "arch": "x86"}
+          - {"os": "windows", "py": "cp39", "arch": "AMD64"}
+          - {"os": "windows", "py": "cp310", "arch": "AMD64"}
+          - {"os": "windows", "py": "cp311", "arch": "AMD64"}
+          - {"os": "windows", "py": "cp312", "arch": "AMD64"}
+          - {"os": "windows", "py": "cp313", "arch": "AMD64"}
+        # [[[end]]] (checksum: 7c3758a4ca41df53d7ebcad68f12d0d0)
+      fail-fast: false
+
+    steps:
+      - name: "Check out the repo"
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: "Install Python"
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: "3.9" # Minimum of PYVERSIONS
+          cache: pip
+          cache-dependency-path: 'requirements/*.pip'
+
+      - name: "Install tools"
+        run: |
+          python -m pip install -r requirements/kit.pip
+
+      - name: "Build binary wheels"
+        env:
+          CIBW_BUILD: ${{ matrix.py }}*-*
+          CIBW_ARCHS: ${{ matrix.arch }}
+          CIBW_ENVIRONMENT: PIP_DISABLE_PIP_VERSION_CHECK=1
+          CIBW_PRERELEASE_PYTHONS: True
+          CIBW_FREE_THREADED_SUPPORT: True
+          CIBW_TEST_COMMAND: python -c "from coverage.tracer import CTracer; print('CTracer OK!')"
+        run: |
+          python -m cibuildwheel --output-dir wheelhouse
+
+      - name: "List binary wheels"
+        run: |
+          ls -al wheelhouse/
+
+      - name: "Check wheels"
+        run: |
+          python -m twine check wheelhouse/*
+
+      - name: "Upload binary wheels"
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: dist-${{ env.MATRIX_ID }}
+          path: wheelhouse/*.whl
+          retention-days: 7
+
+  non-binary:
+    name: "Non-binary artifacts"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Check out the repo"
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: "Install Python"
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: "3.9" # Minimum of PYVERSIONS
+          cache: pip
+          cache-dependency-path: 'requirements/*.pip'
+
+      - name: "Install tools"
+        run: |
+          python -m pip install -r requirements/kit.pip
+
+      - name: "Build non-binary artifacts"
+        env:
+          COVERAGE_DISABLE_EXTENSION: 1
+        run: |
+          python -m build
+
+      - name: "List non-binary artifacts"
+        run: |
+          ls -al dist/
+
+      - name: "Check non-binary artifacts"
+        run: |
+          python -m twine check dist/*
+
+      - name: "Upload non-binary artifacts"
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: dist-non-binary
+          path: dist/*
+          retention-days: 7
+
+  pypy:
+    name: "PyPy wheel"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Check out the repo"
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: "Install PyPy"
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: "pypy-3.9" # Minimum of PyPy PYVERSIONS
+          cache: pip
+          cache-dependency-path: 'requirements/*.pip'
+
+      - name: "Install requirements"
+        run: |
+          pypy3 -m pip install -r requirements/kit.pip
+
+      - name: "Build wheel"
+        env:
+          DIST_EXTRA_CONFIG: extra.cfg
+        run: |
+          # One wheel works for all PyPy versions. PYVERSIONS
+          # yes, this is weird syntax: https://github.com/pypa/build/issues/202
+          echo -e "[bdist_wheel]\npython_tag=pp39.pp310.pp311" > $DIST_EXTRA_CONFIG
+          pypy3 -m build -w
+
+      - name: "List wheels"
+        run: |
+          ls -al dist/
+
+      - name: "Check wheels"
+        run: |
+          python -m twine check dist/*
+
+      - name: "Upload wheels"
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: dist-pypy
+          path: dist/*.whl
+          retention-days: 7
+
+  sign:
+    # This signs our artifacts, but we don't use the signatures for anything
+    # yet.  Someday maybe PyPI will have a way to upload and verify them.
+    name: "Sign artifacts"
+    needs:
+      - wheels
+      - non-binary
+      - pypy
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    steps:
+      - name: "Download artifacts"
+        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4.2.1
+        with:
+          pattern: dist-*
+          merge-multiple: true
+
+      - name: "List distributions"
+        run: |
+          ls -alR
+          echo "Number of dists, there should be $EXPECTED:"
+          ls -1 coverage-* | wc -l
+          files=$(ls coverage-* 2>/dev/null | wc -l) && [ "$files" -eq $EXPECTED ] || exit 1
+
+      - name: "Sign artifacts"
+        uses: sigstore/gh-action-sigstore-python@f514d46b907ebcd5bedc05145c03b69c1edd8b46 # v3.0.0
+        with:
+          inputs: coverage-*.*
+
+      - name: "List files"
+        run: |
+          ls -alR
+
+      - name: "Upload signatures"
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: signatures
+          path: "*.sigstore.json"
+          retention-days: 7

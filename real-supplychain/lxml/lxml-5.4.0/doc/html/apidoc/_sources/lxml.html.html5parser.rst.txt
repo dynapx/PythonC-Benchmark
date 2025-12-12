@@ -1,0 +1,8 @@
+lxml.html.html5parser module
+============================
+
+.. automodule:: lxml.html.html5parser
+   :members:
+   :private-members:
+   :show-inheritance:
+   :undoc-members:

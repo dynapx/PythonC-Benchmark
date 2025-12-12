@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Many color libraries just need this to be set to any value, but at least
+  # one distinguishes color depth, where "3" -> "256-bit color".
+  FORCE_COLOR: 3
+
+jobs:
+  pre-commit-and-lint:
+    name: Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - uses: pre-commit/action@v3.0.1
+        with:
+          extra_args: --hook-stage manual --all-files
+      - uses: prefix-dev/setup-pixi@v0.8.3
+        with:
+          pixi-version: v0.42.1
+          cache: true
+          environments: lint
+      - name: Run Pylint, Mypy & Pyright
+        run: |
+          pixi run -e lint pylint
+          pixi run -e lint mypy
+          pixi run -e lint pyright
+
+  checks:
+    name: Check ${{ matrix.environment }}
+    runs-on: ${{ matrix.runs-on }}
+    needs: [pre-commit-and-lint]
+    strategy:
+      fail-fast: false
+      matrix:
+        environment: [tests-py310, tests-py313, tests-numpy1, tests-backends]
+        runs-on: [ubuntu-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: prefix-dev/setup-pixi@v0.8.3
+        with:
+          pixi-version: v0.42.1
+          cache: true
+          environments: ${{ matrix.environment }}
+
+      - name: Test package
+        run: pixi run -e ${{ matrix.environment }} tests-ci
+
+      - name: Upload coverage report
+        uses: codecov/codecov-action@v5.4.0
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}

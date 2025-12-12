@@ -1,0 +1,24 @@
+# patterns
+*.pyc
+*.pyd
+*.dot
+*.swp
+*.so
+*.sh
+*.o
+
+# files
+MANIFEST
+tags
+.gdb_history
+
+# dirs
+build/
+dist/
+/pyahocorasick.egg-info/
+/tmp/
+/coverage/
+/venv/
+/.python-version
+/automaton-wee.pickle
+/.pytest_cache/
