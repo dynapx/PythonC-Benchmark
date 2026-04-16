@@ -21,3 +21,6 @@ PyObject_Call 等 Python/C API 函数由 C/C++侧回调 Python 对象.
 
 ## 相关测试工具
 ![img_3.png](picture/img_3.png)
+
+## 测试结果说明
+
